@@ -1,0 +1,36 @@
+{
+ "HashAlgorithm": "SHA256",
+ "imageinfo": [
+  {
+   "addr": 16384,
+   "file": "ap_bootloader.bin",
+   "flashsize": 32768,
+   "hash": "1CC29C411DFAE044FBB68BB7E6783E9FB84F4523E589299CEE4F7ED72D8C406B",
+   "type": "BL"
+  },
+  {
+   "addr": 147456,
+   "file": "ap_at_command.bin",
+   "flashsize": 2998272,
+   "hash": "EC5204C878A7315FF5B7C6847C34F508B14C9CFDB4871BD13205E8C7626ECC62",
+   "type": "AP"
+  },
+  {
+   "addr": 0,
+   "file": "cp-demo-flash.bin",
+   "flashsize": 524288,
+   "hash": "2EE71BFA864F128A8264997D01B67738BE07D0ECCF6DD727A596E240B1C52C3F",
+   "type": "CP"
+  }
+ ],
+ "imagepath": "C:\\Users\\ivan\\Documents\\projects\\ec616_00\\release_ec616_01\\jwzhuang20191121_20191031_flashtoolcli\\FlashToolsEC618\\FlashToolsCLI_V4.0.3\\image_ec618\\pkgdir\\pkg_extract_tmp\\",
+ "ExtractSyncRec": {
+  "LastSyncTime": 1638434889,
+  "LastSyncStat": 1,
+  "PackagePath": "C:\\Users\\ivan\\Documents\\projects\\ec616_00\\release_ec616_01\\jwzhuang20191121_20191031_flashtoolcli\\FlashToolsEC618\\FlashToolsCLI_V4.0.3\\image_ec618\\pkgdir\\at_command.binpkg",
+  "PackageExtDir": "C:\\Users\\ivan\\Documents\\projects\\ec616_00\\release_ec616_01\\jwzhuang20191121_20191031_flashtoolcli\\FlashToolsEC618\\FlashToolsCLI_V4.0.3\\image_ec618\\pkgdir\\pkg_extract_tmp",
+  "PackageModTime": 1638429667,
+  "PackageSize": 2405258,
+  "PackageHash": "6cb10dbcb7333163503b9c0ef4558bbb7882851fa2df0527ff932ace6323082a"
+ }
+}

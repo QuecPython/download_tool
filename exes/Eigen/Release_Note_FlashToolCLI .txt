@@ -1,0 +1,12 @@
+程序名称：FlashToolCLI
+程序版本：FlashToolCLI v4.0.3
+
+V4.0.3 
+20211202
+1.更新fcelf.exe,支持新格式包。
+2.更新了image_ec618 agentboot.bin
+3.更新了配置参数tool_basedir
+
+V4.0.1 
+20210926
+1.增加支持EC618。
