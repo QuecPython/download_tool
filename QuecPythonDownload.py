@@ -305,26 +305,19 @@ class QuecPyDownload(object):
                         shutil.copyfile(PROJECT_ABSOLUTE_PATH + "\\exes\\aboot\\adownload.exe", self.tmp_path.replace("/","\\") + "\\adownload.exe")
                     elif self.platform.lower() in ["unisoc", "unisoc8910", "unisoc8850"]:
                         newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
-                        shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\rda\\", self.tmp_path.replace("/", "\\")+ "\\rda\\")
                     elif self.platform.upper() == "RDA8908A":
                         newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
-                        shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\NB\\", self.tmp_path.replace("/", "\\")+ "\\NB\\")
                     elif self.platform.upper() == "MDM9X05":
                         newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0] + "\\firehose\\partition.mbn"
-                        shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\NB\\", self.tmp_path.replace("/", "\\")+ "\\NB\\")
                     elif self.platform.upper() == "ASR1803S":
                         newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0] + "\\Falcon_EVB_QSPI_Nor_LWG_Only_Nontrusted_PM802_LPDDR2.blf"
-                        shutil.copyfile(PROJECT_ABSOLUTE_PATH + "\\exes\\blf_tools\\SWDConsole.exe", self.tmp_path.replace("/","\\") + "\\SWDConsole.exe")
                     elif self.platform.upper() == "FCM360W":
                         newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
-                        shutil.copyfile(PROJECT_ABSOLUTE_PATH + "\\exes\\FCM360W\\EswinFlashTool.exe", self.tmp_path.replace("/","\\") + "\\EswinFlashTool.exe")
                     elif self.platform.upper() == "FC41D":
                         newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
-                        shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\FC41D", self.tmp_path.replace("/","\\") + "\\FC41D")
                     elif self.platform.upper() == "EIGEN":
                         fdir = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
                         newFW = fdir + "\\at_command.binpkg"
-                        shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\Eigen\\", self.tmp_path.replace("/", "\\")+ "\\Eigen")
                         self.eigen_config(fdir, newFW)
                     else:
                         return None
@@ -338,7 +331,6 @@ class QuecPyDownload(object):
                 if ifExist(self.tmp_path + "\\system.img"):
                     self.platform = "ASR1601"
                     shutil.copyfile(self.file_name, self.tmp_path + "\\" + self.file_name.split("\\")[-1])
-                    shutil.copyfile(PROJECT_ABSOLUTE_PATH + "\\exes\\aboot\\adownload.exe", self.tmp_path.replace("/","\\") + "\\adownload.exe")
                     newFW = self.tmp_path + "\\" + self.file_name.split("\\")[-1]
                 else:
                     return None
@@ -352,19 +344,16 @@ class QuecPyDownload(object):
                     with open(PROJECT_ABSOLUTE_PATH + "\\exes\\rda\\ResearchDownload.ini", 'w+') as configfile:
                         self.config.write(configfile)
                 shutil.copyfile(self.file_name, self.tmp_path + "\\" + self.file_name.split("\\")[-1])
-                shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\rda\\", self.tmp_path.replace("/", "\\")+ "\\rda\\")
                 newFW = self.tmp_path + "\\" + self.file_name.split("\\")[-1]
             elif self.file_name[-3:].lower() == "lod":
                 self.platform = "RDA8908A"
                 shutil.copyfile(self.file_name, self.tmp_path + "\\" + self.file_name.split("\\")[-1])
-                shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\NB\\", self.tmp_path.replace("/", "\\")+ "\\NB\\")
                 newFW = self.tmp_path + "\\" + self.file_name.split("\\")[-1]
             elif self.file_name[-3:].lower() == "blf":
                 self.platform = "ASR1803S"
                 self.fdir = fatherDir(self.file_name)
                 self.fdir_name = self.fdir.split("\\")[-1]
                 shutil.copytree(self.fdir, self.tmp_path.replace("/", "\\") + "\\" + self.fdir_name)
-                shutil.copyfile(PROJECT_ABSOLUTE_PATH + "\\exes\\blf_tools\\SWDConsole.exe", self.tmp_path.replace("/","\\") + "\\SWDConsole.exe")
                 newFW = self.tmp_path + "\\" + self.fdir_name  + "\\" + self.file_name.split("\\")[-1]
             elif self.file_name[-3:].lower() == "mbn":
                 self.platform = "MDM9X05"
@@ -373,27 +362,22 @@ class QuecPyDownload(object):
                 fdir2 = fatherDir(fdir1)
                 fdir2_name = fdir2.split("\\")[-1]
                 shutil.copytree(fdir2, self.tmp_path.replace("/", "\\") + "\\" + fdir2_name)
-                shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\NB\\", self.tmp_path.replace("/", "\\")+ "\\NB\\")
                 newFW = self.tmp_path + "\\" + fdir2_name + "\\" + fdir1_name + "\\" + self.file_name.split("\\")[-1]
             elif self.file_name[-6:].lower() == "binpkg":
                 self.platform = "EIGEN"
                 fdir = fatherDir(self.file_name)
                 fdir_name = fdir.split("\\")[-1]
                 shutil.copytree(fdir, self.tmp_path.replace("/", "\\") + "\\" + fdir_name)
-                shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\Eigen\\", self.tmp_path.replace("/", "\\")+ "\\Eigen")
                 newFW = self.tmp_path + "\\" + fdir_name  + "\\" + self.file_name.split("\\")[-1]
                 self.eigen_config(fdir_name, newFW)
-               
             elif self.file_name[-3:].lower() == "bin":
                 if self.file_name.upper().find("FCM360W") != -1:
                     self.platform = "FCM360W"
                     shutil.copyfile(self.file_name, self.tmp_path + "\\" + self.file_name.split("\\")[-1])
-                    shutil.copyfile(PROJECT_ABSOLUTE_PATH + "\\exes\\FCM360W\\EswinFlashTool.exe", self.tmp_path.replace("/","\\") + "\\EswinFlashTool.exe")
                     newFW = self.tmp_path + "\\" + self.file_name.split("\\")[-1]
                 elif self.file_name.upper().find("FC41D") != -1:
                     self.platform = "FC41D"
                     shutil.copyfile(self.file_name, self.tmp_path + "\\" + self.file_name.split("\\")[-1])
-                    shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\FC41D", self.tmp_path.replace("/","\\") + "\\FC41D")
                     newFW = self.tmp_path + "\\" + self.file_name.split("\\")[-1]
                 else:
                     return None
@@ -453,28 +437,40 @@ class QuecPyDownload(object):
     def firmware_handler(self):
         download_overtime = 45
         if self.platform.upper() in ["ASR", "ASR1601", "ASR1606"]:
+            checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\aboot")
+            shutil.copyfile(PROJECT_ABSOLUTE_PATH + "\\exes\\aboot\\adownload.exe", self.tmp_path.replace("/","\\") + "\\adownload.exe")
             cmd = [self.tmp_path.replace("/","\\") + "\\adownload.exe", '-p', self.device, '-a', '-q', '-r', '-s', self.baudrate, self.tmp_name]
             print('------------------ adownload downloading factory package: ------------------')
             downloadProcess = '"progress" :'
         elif self.platform.lower() in ["unisoc", "unisoc8910", "unisoc8850"]:
+            checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\rda")
+            shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\rda\\", self.tmp_path.replace("/", "\\")+ "\\rda\\")
             cmd = [self.tmp_path.replace("/","\\") + "\\CmdDloader.exe", '-pac', self.tmp_name]
             print('------------------ unisoc downloading upgrade package: ------------------')
             download_overtime = 600
             downloadProcess = 'Downloading...'
         elif self.platform.upper() == "RDA8908A":
+            checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\NB")
+            shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\NB\\", self.tmp_path.replace("/", "\\")+ "\\NB\\")
             cmd = [self.tmp_path.replace("/", "\\")+ "\\NB\\QMulti_DL_CMD_V2.1.exe", self.device[3:], self.baudrate, self.tmp_name]
             print('------------------ NB downloading upgrade package: ------------------')
             downloadProcess = '[1]Upgrade:'
         elif self.platform.upper() == "ASR1803S":
+            checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\blf_tools")
+            shutil.copyfile(PROJECT_ABSOLUTE_PATH + "\\exes\\blf_tools\\SWDConsole.exe", self.tmp_path.replace("/","\\") + "\\SWDConsole.exe")
             cmd = [self.tmp_path.replace("/","\\") + "\\SWDConsole.exe", '-f', self.tmp_name]
             print('------------------ 200A download downloading factory package(blf): ------------------')
             downloadProcess = 'Add an WTPTP device: Device 1'
         elif self.platform.upper() == "MDM9X05":
+            checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\NB")
+            shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\NB\\", self.tmp_path.replace("/", "\\")+ "\\NB\\")
             cmd = [self.tmp_path.replace("/", "\\")+ "\\NB\\QMulti_DL_CMD_V2.1.exe", self.device[3:], self.baudrate, self.tmp_name]
             self.tmp_path = self.tmp_path.replace("/", "\\")+ "\\NB"
             print('------------------ BG95 download downloading factory package(mbn): ------------------')
             downloadProcess = '[1]DL-'
         elif self.platform.upper() == "EIGEN":
+            checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\Eigen")
+            shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\Eigen\\", self.tmp_path.replace("/", "\\")+ "\\Eigen")
             self.binpkg_config.set('config', 'line_0_com', self.device)
             with open(self.binpkg_config_ini, "w+", encoding='utf-8') as f:
                 self.binpkg_config.write(f)
@@ -482,10 +478,14 @@ class QuecPyDownload(object):
             print('------------------ Eigen downloading upgrade package(binpkg): ------------------')
             downloadProcess = 'Eigen'
         elif self.platform.upper() == "FCM360W":
+            checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\FCM360W")
+            shutil.copyfile(PROJECT_ABSOLUTE_PATH + "\\exes\\FCM360W\\EswinFlashTool.exe", self.tmp_path.replace("/","\\") + "\\EswinFlashTool.exe")
             cmd = [self.tmp_path.replace("/","\\") + "\\EswinFlashTool.exe", '-p', self.device[3:], '-b', "921600", '-file', self.tmp_name]
             print('------------------ FCM360W downloading factory package: ------------------')
             downloadProcess = 'Device'
         elif self.platform.upper() == "FC41D":
+            checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\FC41D")
+            shutil.copytree(PROJECT_ABSOLUTE_PATH + "\\exes\\FC41D", self.tmp_path.replace("/","\\") + "\\FC41D")
             cmd = [self.tmp_path.replace("/","\\") + "\\FC41D\\bk_loader.exe", 'download', '-p', self.device[3:], '-b', "921600", '-i', self.tmp_name]
             print('------------------ FC41D downloading factory package: ------------------')
             downloadProcess = 'FC41D'
@@ -503,36 +503,39 @@ class QuecPyDownload(object):
         global TIMEMONITOR
         tmp = TIMEMONITOR
         i = 0
-        while True:
-            if tmp == TIMEMONITOR:
-                i += 1
-            else:
-                i = 0
-            tmp = TIMEMONITOR
+        try:
+            while True:
+                if tmp == TIMEMONITOR:
+                    i += 1
+                else:
+                    i = 0
+                tmp = TIMEMONITOR
+                time.sleep(1)
+                if i > out_time:
+                    if self.platform.upper() in ["ASR", "ASR1601", "ASR1606"]:
+                        p = subprocess.Popen(r'taskkill /F /IM adownload.exe',shell = True)
+                    elif self.platform.lower() in ["unisoc", "unisoc8910", "unisoc8850"]:
+                        p = subprocess.Popen(r'taskkill /F /IM CmdDloader.exe',shell = True)
+                    elif self.platform.upper() == "RDA8908A":
+                        p = subprocess.Popen(r'taskkill /F /IM QMulti_DL_CMD_V2.1.exe',shell = True)
+                    elif self.platform.upper() == "ASR1803S":
+                        p = subprocess.Popen(r'taskkill /F /IM SWDConsole.exe',shell = True)
+                    elif self.platform.upper() == "MDM9X05":
+                        p = subprocess.Popen(r'taskkill /F /IM QMulti_DL_CMD_V2.1.exe',shell = True)
+                    elif self.platform.upper() == "EIGEN":
+                        p = subprocess.Popen(r'taskkill /F /IM flashtoolcli1.exe',shell = True)
+                    elif self.platform.upper() == "FCM360W":
+                        p = subprocess.Popen(r'taskkill /F /IM EswinFlashTool.exe',shell = True)
+                    elif self.platform.upper() == "FC41D":
+                        p = subprocess.Popen(r'taskkill /F /IM bk_loader.exe',shell = True)
+                    break
+                if int(TIMEMONITOR) in (99,100):
+                    break
+            TIMEMONITOR = 0
             time.sleep(1)
-            if i > out_time:
-                if self.platform.upper() in ["ASR", "ASR1601", "ASR1606"]:
-                    p = subprocess.Popen(r'taskkill /F /IM adownload.exe',shell = True)
-                elif self.platform.lower() in ["unisoc", "unisoc8910", "unisoc8850"]:
-                    p = subprocess.Popen(r'taskkill /F /IM CmdDloader.exe',shell = True)
-                elif self.platform.upper() == "RDA8908A":
-                    p = subprocess.Popen(r'taskkill /F /IM QMulti_DL_CMD_V2.1.exe',shell = True)
-                elif self.platform.upper() == "ASR1803S":
-                    p = subprocess.Popen(r'taskkill /F /IM SWDConsole.exe',shell = True)
-                elif self.platform.upper() == "MDM9X05":
-                    p = subprocess.Popen(r'taskkill /F /IM QMulti_DL_CMD_V2.1.exe',shell = True)
-                elif self.platform.upper() == "EIGEN":
-                    p = subprocess.Popen(r'taskkill /F /IM flashtoolcli1.exe',shell = True)
-                elif self.platform.upper() == "FCM360W":
-                    p = subprocess.Popen(r'taskkill /F /IM EswinFlashTool.exe',shell = True)
-                elif self.platform.upper() == "FC41D":
-                    p = subprocess.Popen(r'taskkill /F /IM bk_loader.exe',shell = True)
-                break
-            if int(TIMEMONITOR) in (99,100):
-                break
-        TIMEMONITOR = 0
-        time.sleep(1)
-        # shutil.rmtree(self.tmp_path)
+            shutil.rmtree(self.tmp_path)
+        except:
+            pass
         return
 
 
@@ -543,6 +546,14 @@ def isZip(Path):
 def unzipFile(src, dst):
     with zipfile.ZipFile(src, 'r') as zip_ref:
         zip_ref.extractall(dst)
+
+def checkExeFile(Path):
+    if ifExist(Path):
+        pass
+    elif ifExist(Path + ".tar.gz"):
+        os.system("tar -zxf " + Path + ".tar.gz -C exes")
+    else:
+        os.system("tar -zxf " + Path + ".tar.gz -C exes > /dev/null")
 
 
 def readJSON(jsonName):
@@ -587,8 +598,8 @@ def main():
     # open the connection to the qpyoard
     try:
         qpy = QuecPyDownload(args.device, args.baudrate, args.file)
-    except QuecPyDownloadError as er:
-        print(er)
+    except QuecPyDownloadError as err:
+        print(err)
         sys.exit(1)
 
 

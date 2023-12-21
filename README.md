@@ -110,14 +110,14 @@ PyInstaller如何封装多个文件及文件夹
    
    ```
 
-3. 把所有的`.py`文件写到`a=Analysis()`中的首个列表元素中，如果文件和`QuecPythonDownload.py`在同一目录下，则直接写文件名，如果是在文件夹内，则需要加上绝对地址
+3. 把所有的`.py`文件写到`a=Analysis()`中的首个列表元素中，如果文件和`QuecPythonDownload.py`在同一目录下，则直接写文件名，如果是在文件夹内，则需要加上相对地址（绝对地址也行）
 
 4. 把所有的非`.py`文件放到`a=Analysis()`中的`datas`参数值中，`datas`的每个元素含两个参数，前一个是存放非`.py`文件的路径，后一个是存放的文件夹名称。在封装时，会根据这个文件夹路径搜索需要拷贝的非`.py`文件。
 
    ```
-    datas=[(绝对路径, "exes")],
+    datas=[("C:\\****\\aboot.tar.gz", "exes")],
    ```
 
-
+5. 最后，保存修改好的main.spec，同样的，在命令行窗口中输入：pyinstaller QuecPythonDownload.spec
 
 
