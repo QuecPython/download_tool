@@ -1,4 +1,5 @@
 import sys
+import serial
 import time
 import os
 import tempfile
@@ -436,6 +437,18 @@ class QuecPyDownload(object):
 
     def firmware_handler(self):
         download_overtime = 45
+        # into download mode
+        if self.platform.upper() in ["ASR", "ASR1601", "ASR1606", "unisoc", "unisoc8910", "unisoc8850", "EIGEN"]:
+            conn = serial.Serial(self.device, self.baudrate)
+            conn.write(('at+qdownload=1\r\n').encode())
+            conn.close()
+            self.device = comPortNumber({"EC600SCNAA":"2C7C:6001",
+										   "EC600SCNLB":"2C7C:6002",
+										   "EC600UCNLB":"2C7C:0901",
+										   "BC25": "10C4:EA70",
+										   "EC800GCNGA": "2C7C:0904",
+										   "Eigen": "17D1:0001"
+										  })
         if self.platform.upper() in ["ASR", "ASR1601", "ASR1606"]:
             checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\aboot")
             shutil.copyfile(PROJECT_ABSOLUTE_PATH + "\\exes\\aboot\\adownload.exe", self.tmp_path.replace("/","\\") + "\\adownload.exe")
@@ -528,6 +541,7 @@ class QuecPyDownload(object):
                         p = subprocess.Popen(r'taskkill /F /IM EswinFlashTool.exe',shell = True)
                     elif self.platform.upper() == "FC41D":
                         p = subprocess.Popen(r'taskkill /F /IM bk_loader.exe',shell = True)
+
                     break
                 if int(TIMEMONITOR) in (99,100):
                     break
@@ -537,6 +551,17 @@ class QuecPyDownload(object):
         except:
             pass
         return
+
+
+def comPortNumber(vid_pid, port=""):
+		for p in list(serial.tools.list_ports.comports()):
+			for i in vid_pid.values():
+				if port == "":
+					if i in p.hwid:
+						return p.device
+				else:
+					if i and port in p.hwid:
+						return p.device
 
 
 def isZip(Path):
