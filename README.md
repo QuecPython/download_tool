@@ -22,8 +22,13 @@
 ## 命令行格式
 
 ```bash
-QuecPythonDownload.exe -d com6 -b 115200 -f "固件文件名"
+QuecPythonDownload.exe -l -d com6 -b 115200 -f "固件文件名"
 ```
+
+- -l  是否打开原始工具烧录日志输出。用于debug，正常使用可以不加此参数
+- -d 设备串口，有烧录口传烧录口，需要进入下载模式传at口
+- -b 串口波特率
+- -f 固件包文件名
 
 ## 下载流程
 
