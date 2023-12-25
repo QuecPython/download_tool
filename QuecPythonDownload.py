@@ -33,201 +33,128 @@ class runCommand(threading.Thread):
         self.start()
 
     def run(self):
-        global TIMEMONITOR
+        global TIMEMONITOR, LOGFLAG
         print("real CMD: " + " ".join(self.cmd))
-        if self.string == "Downloading...":
-            p = subprocess.Popen(self.cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            i = 1
-            for line in p.stdout:
-                # print(line.decode(encoding='utf-8', errors='ignore'))
-                if self.string in line.decode(encoding='utf-8', errors='ignore'):
-                    TIMEMONITOR = i*10
-                    print("Progress : \033[32m{}%\033[0m".format(str(TIMEMONITOR)))
-                    i += 1
-                if "DownLoad Passed" in line.decode(encoding='utf-8', errors='ignore'):
-                    TIMEMONITOR = 100
-                    print("Progress : \033[32m{}%\033[0m".format(str(TIMEMONITOR)))
-                    p = subprocess.Popen(r'taskkill /F /IM ResearchDownload.exe',shell = True)
-                if "[ERROR] DownLoad Failed" in line.decode(encoding='utf-8', errors='ignore'):
-                    print("Progress : \033[31m=======Failed=======\033[0m")
-        elif self.string == "[1]Upgrade:":
+        if LOGFLAG:
             p = subprocess.Popen(self.cmd, shell=True, cwd=self.cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             for line in p.stdout:
                 line_decode = line.decode(encoding='utf-8', errors='ignore')
-                if self.string in line_decode:
-                    TIMEMONITOR = line_decode.replace(self.string, '').strip()[:-1]
-                    print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-                    if '[1]Upgrade: 100%' in line_decode:
-                        TIMEMONITOR = 100
-                        p = subprocess.Popen(r'taskkill /F /IM adownload.exe', shell=True)
+                print(line_decode)
+        else:
+            if self.string == "Downloading...":
+                p = subprocess.Popen(self.cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                i = 1
+                for line in p.stdout:
+                    # print(line.decode(encoding='utf-8', errors='ignore'))
+                    if self.string in line.decode(encoding='utf-8', errors='ignore'):
+                        TIMEMONITOR = i*10
                         print("Progress : \033[32m{}%\033[0m".format(str(TIMEMONITOR)))
-        elif self.string == "[1]DL-":
-            p = subprocess.Popen(self.cmd, shell=True, cwd=self.cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            i = 0
-            for line in p.stdout:
-                line_decode = line.decode(encoding='utf-8', errors='ignore')
-                if self.string in line_decode:
-                    TIMEMONITOR = str(i)
-                    print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-                    i += 2
-                if '[1]Total upgrade time is' in line_decode:
-                    # p = subprocess.Popen(r'taskkill /F /IM adownload.exe', shell=True)
-                    TIMEMONITOR = '100'
-                    print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-                    p = subprocess.Popen(r'taskkill /F /IM QMulti_DL_CMD_V2.1.exe',shell = True)
-        elif self.string == 'Add an WTPTP device: Device 1':
-            p = subprocess.Popen(self.cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in p.stdout:
-                line_decode = line.decode(encoding='utf-8', errors='ignore')
-                if "Successfully to prepare temp folder file for wtptp download" in line_decode:
-                    print("please restart")
-                if "please plug in USB device ...." in line_decode:
-                    for i in range(10):
-                        TIMEMONITOR = str(i*10)
-                        print("Progress : \033[32m{}%\033[0m".format(str(i*10)))
-                        time.sleep(5)
-                if "Device 1:Download Completed successfully" in line_decode:
-                    TIMEMONITOR = 100
-                    print("Progress : \033[32m{}%\033[0m".format(str(TIMEMONITOR)))
-                    p = subprocess.Popen(r'taskkill /F /IM ResearchDownload.exe',shell = True)
-        elif self.string == 'Device':
-            p = subprocess.Popen(self.cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in p.stdout:
-                try:
+                        i += 1
+                    if "DownLoad Passed" in line.decode(encoding='utf-8', errors='ignore'):
+                        TIMEMONITOR = 100
+                        print("Progress : \033[32m{}%\033[0m".format(str(TIMEMONITOR)))
+                        p = subprocess.Popen(r'taskkill /F /IM ResearchDownload.exe',shell = True)
+                    if "[ERROR] DownLoad Failed" in line.decode(encoding='utf-8', errors='ignore'):
+                        print("Progress : \033[31m=======Failed=======\033[0m")
+            elif self.string == "[1]Upgrade:":
+                p = subprocess.Popen(self.cmd, shell=True, cwd=self.cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                for line in p.stdout:
                     line_decode = line.decode(encoding='utf-8', errors='ignore')
                     if self.string in line_decode:
-                        info = json.loads(line_decode)
-                        Status = info.get("Status")
-                        if Status == "Programming":
-                            TIMEMONITOR = info.get("Progress")
-                            print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-                        elif Status == "Fail":
-                            print("Progress : \033[31m=======Failed=======\033[0m")
-                except Exception as e:
-                    print("e: ", e)
-        elif self.string == 'Eigen':
-            TIMEMONITOR = 0
-            # # pkg2img
-            # cmd0 = ' '.join(self.cmd[:2] + ["pkg2img"])
-            # print(" pkg2img ")
-            # print(cmd0)
-            # p = subprocess.Popen(cmd0, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            # for line in p.stdout:
-            #     line_decode = line.decode(encoding='utf-8', errors='ignore')
-            #     print(line_decode)
+                        TIMEMONITOR = line_decode.replace(self.string, '').strip()[:-1]
+                        print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                        if '[1]Upgrade: 100%' in line_decode:
+                            TIMEMONITOR = 100
+                            p = subprocess.Popen(r'taskkill /F /IM adownload.exe', shell=True)
+                            print("Progress : \033[32m{}%\033[0m".format(str(TIMEMONITOR)))
+            elif self.string == "[1]DL-":
+                p = subprocess.Popen(self.cmd, shell=True, cwd=self.cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                i = 0
+                for line in p.stdout:
+                    line_decode = line.decode(encoding='utf-8', errors='ignore')
+                    if self.string in line_decode:
+                        TIMEMONITOR = str(i)
+                        print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                        i += 2
+                    if '[1]Total upgrade time is' in line_decode:
+                        # p = subprocess.Popen(r'taskkill /F /IM adownload.exe', shell=True)
+                        TIMEMONITOR = '100'
+                        print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                        p = subprocess.Popen(r'taskkill /F /IM QMulti_DL_CMD_V2.1.exe',shell = True)
+            elif self.string == 'Add an WTPTP device: Device 1':
+                p = subprocess.Popen(self.cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                for line in p.stdout:
+                    line_decode = line.decode(encoding='utf-8', errors='ignore')
+                    if "Successfully to prepare temp folder file for wtptp download" in line_decode:
+                        print("please restart")
+                    if "please plug in USB device ...." in line_decode:
+                        for i in range(10):
+                            TIMEMONITOR = str(i*10)
+                            print("Progress : \033[32m{}%\033[0m".format(str(i*10)))
+                            time.sleep(5)
+                    if "Device 1:Download Completed successfully" in line_decode:
+                        TIMEMONITOR = 100
+                        print("Progress : \033[32m{}%\033[0m".format(str(TIMEMONITOR)))
+                        p = subprocess.Popen(r'taskkill /F /IM ResearchDownload.exe',shell = True)
+            elif self.string == 'Device':
+                p = subprocess.Popen(self.cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                for line in p.stdout:
+                    try:
+                        line_decode = line.decode(encoding='utf-8', errors='ignore')
+                        if self.string in line_decode:
+                            info = json.loads(line_decode)
+                            Status = info.get("Status")
+                            if Status == "Programming":
+                                TIMEMONITOR = info.get("Progress")
+                                print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                            elif Status == "Fail":
+                                print("Progress : \033[31m=======Failed=======\033[0m")
+                    except Exception as e:
+                        print("e: ", e)
+            elif self.string == 'Eigen':
+                TIMEMONITOR = 0
+                # # pkg2img
+                # cmd0 = ' '.join(self.cmd[:2] + ["pkg2img"])
+                # print(" pkg2img ")
+                # print(cmd0)
+                # p = subprocess.Popen(cmd0, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                # for line in p.stdout:
+                #     line_decode = line.decode(encoding='utf-8', errors='ignore')
+                #     print(line_decode)
 
-            # process += 1
-            # ql.set_value("timeMonitor", str(process))
-            # ql.get_value('pub').sendMessage('Progress', arg1=str(process))
+                # process += 1
+                # ql.set_value("timeMonitor", str(process))
+                # ql.get_value('pub').sendMessage('Progress', arg1=str(process))
 
-            config = configparser.ConfigParser(interpolation=None)
-            config.read(self.cwd + "\\" + [i for i in os.listdir(self.cwd) if i not in ("platform_config.json", self.string)][0] + "\\quec_download_config.ini")
+                config = configparser.ConfigParser(interpolation=None)
+                config.read(self.cwd + "\\" + [i for i in os.listdir(self.cwd) if i not in ("platform_config.json", self.string)][0] + "\\quec_download_config.ini")
 
-            # check connect
-            cmd1 = ' '.join(self.cmd[:3] + ["probe"])
-            p = subprocess.Popen(cmd1, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in p.stdout:
-                line_decode = line.decode(encoding='utf-8', errors='ignore')
-                if "RtsConditionAssign" in line_decode:
-                    TIMEMONITOR += 1
-                    print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                # check connect
+                cmd1 = ' '.join(self.cmd[:3] + ["probe"])
+                p = subprocess.Popen(cmd1, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                for line in p.stdout:
+                    line_decode = line.decode(encoding='utf-8', errors='ignore')
+                    if "RtsConditionAssign" in line_decode:
+                        TIMEMONITOR += 1
+                        print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
 
-            # flash pkg2img
-            cmd0 = ' '.join(self.cmd[:2] + ["pkg2img"])
-            print(" pkg2img ")
-            print(cmd0)
-            p = subprocess.Popen(cmd0, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in p.stdout:
-                line_decode = line.decode(encoding='utf-8', errors='ignore')
-                print(line_decode)
-
-            TIMEMONITOR += 1
-            print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-
-            # 
-            cmd2 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["burn"])
-            print(" Burn firmware ")
-            print(cmd2)
-            p = subprocess.Popen(cmd2, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in p.stdout:
-                line_decode = line.decode(encoding='utf-8', errors='ignore')
-                if "files transferred" in line_decode:
-                    print(line_decode)
-                    TIMEMONITOR += 1
-                    print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-
-            # download ap_application.bin
-            cmd3_2 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["flasherase"] + [config.get('File_1', 'START_ADDR') + config.get('File_1', 'MAX_SIZE')])
-            print(" Download ap_application.bin flasherase ")
-            print(cmd3_2)
-            p = subprocess.Popen(cmd3_2, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in p.stdout:
-                line_decode = line.decode(encoding='utf-8', errors='ignore')
-
-            cmd3_2 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["burnone flexfile2"])
-            print(" Download ap_application.bin burnone ")
-            print(cmd3_2)
-            p = subprocess.Popen(cmd3_2, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in p.stdout:
-                line_decode = line.decode(encoding='utf-8', errors='ignore')
-                if "files transferred" in line_decode:
-                    TIMEMONITOR += 1
-                    print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-
-            # download ap_updater.bin
-            cmd3_3 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["flasherase"] + [config.get('File_2', 'START_ADDR') + config.get('File_2', 'MAX_SIZE')])
-            print(" Download ap_updater.bin flasherase ")
-            print(cmd3_3)
-            p = subprocess.Popen(cmd3_3, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in p.stdout:
-                line_decode = line.decode(encoding='utf-8', errors='ignore')
-                print(line_decode)
-
-            cmd3_3 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["burnone flexfile3"])
-            print(" Download ap_updater.bin burnone ")
-            print(cmd3_3)
-            p = subprocess.Popen(cmd3_3, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in p.stdout:
-                line_decode = line.decode(encoding='utf-8', errors='ignore')
-                if "files transferred" in line_decode:
-                    print(line_decode)
-                    TIMEMONITOR += 1
-                    print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-
-            # download customer_fs.bin
-            cmd3_4 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["flasherase"] + [config.get('File_3', 'START_ADDR') + config.get('File_3', 'START_ADDR')])
-            print(" Download customer_fs.bin flasherase ")
-            print(cmd3_4)
-            p = subprocess.Popen(cmd3_4, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in p.stdout:
-                line_decode = line.decode(encoding='utf-8', errors='ignore')
-                print(line_decode)
-
-            cmd3_4 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["burnone flexfile4"])
-            print(" Download customer_fs.bin burnone ")
-            print(cmd3_4)
-            p = subprocess.Popen(cmd3_4, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in p.stdout:
-                line_decode = line.decode(encoding='utf-8', errors='ignore')
-                if "files transferred" in line_decode:
-                    print(line_decode)
-                    TIMEMONITOR += 1
-                    print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-                    
-            if config.get('File', 'File_Count') == 4:
-                # download customer_backup_fs.bin 
-                cmd3_5 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["flasherase"] + [config.get('File_4', 'START_ADDR') + config.get('File_4', 'START_ADDR')])
-                print(" Download customer_backup_fs.bin flasherase ")
-                print(cmd3_5)
-                p = subprocess.Popen(cmd3_5, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                # flash pkg2img
+                cmd0 = ' '.join(self.cmd[:2] + ["pkg2img"])
+                print(" pkg2img ")
+                print(cmd0)
+                p = subprocess.Popen(cmd0, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 for line in p.stdout:
                     line_decode = line.decode(encoding='utf-8', errors='ignore')
                     print(line_decode)
 
-                cmd3_5 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["burnone flexfile5"])
-                print(" Download customer_backup_fs.bin burnone ")
-                print(cmd3_5)
-                p = subprocess.Popen(cmd3_5, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                TIMEMONITOR += 1
+                print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+
+                # 
+                cmd2 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["burn"])
+                print(" Burn firmware ")
+                print(cmd2)
+                p = subprocess.Popen(cmd2, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 for line in p.stdout:
                     line_decode = line.decode(encoding='utf-8', errors='ignore')
                     if "files transferred" in line_decode:
@@ -235,54 +162,133 @@ class runCommand(threading.Thread):
                         TIMEMONITOR += 1
                         print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
 
-            # reset module
-            cmd5 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["sysreset"])
-            print(" sysreset ")
-            print(cmd5)
-            p = subprocess.Popen(cmd5, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in p.stdout:
-                line_decode = line.decode(encoding='utf-8', errors='ignore')
-                print(line_decode)
-            print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-        elif self.string == 'FC41D':
-            TIMEMONITOR = 0
-            cmd1 = ' '.join(self.cmd)
-            print(" Burn FC41D firmware ")
-            print(cmd1)
-            p = subprocess.Popen(cmd1, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in p.stdout:
-                line_decode = line.decode(encoding='utf-8', errors='ignore')
-                print(line_decode)
-                if "Getting Bus" in line_decode:
-                    print("please restart")
-                if "Unprotected Flash" in line_decode:
-                    TIMEMONITOR = 5
-                    print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-                if "Begin EraseFlash" in line_decode:
-                    TIMEMONITOR = 10
-                    print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-                if "EraseFlash ->pass" in line_decode:
-                    TIMEMONITOR = 30
-                    print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-                if "Begin WriteFlash" in line_decode:
-                    for i in range(15):
-                        time.sleep(1)
-                        TIMEMONITOR += 4
+                # download ap_application.bin
+                cmd3_2 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["flasherase"] + [config.get('File_1', 'START_ADDR') + config.get('File_1', 'MAX_SIZE')])
+                print(" Download ap_application.bin flasherase ")
+                print(cmd3_2)
+                p = subprocess.Popen(cmd3_2, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                for line in p.stdout:
+                    line_decode = line.decode(encoding='utf-8', errors='ignore')
+
+                cmd3_2 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["burnone flexfile2"])
+                print(" Download ap_application.bin burnone ")
+                print(cmd3_2)
+                p = subprocess.Popen(cmd3_2, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                for line in p.stdout:
+                    line_decode = line.decode(encoding='utf-8', errors='ignore')
+                    if "files transferred" in line_decode:
+                        TIMEMONITOR += 1
                         print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-                if "Finished Successfully" in line_decode:
-                    print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-        else:
-            p = subprocess.Popen(self.cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in p.stdout:
-                print(line.decode(encoding='utf-8', errors='ignore'))
-                line = line.decode(encoding='utf-8', errors='replace' if sys.version_info < (3, 5) else 'backslashreplace').rstrip()
-                if self.string in line:
-                    TIMEMONITOR = line[line.find(self.string)+len(self.string):-1]
-                    print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
-                    if '"progress" : 100,' in line:
-                        p = subprocess.Popen(r'taskkill /F /IM adownload.exe', shell=True)
-                        print("Progress : \033[32m{}%\033[0m".format(str(100)))
-                        return
+
+                # download ap_updater.bin
+                cmd3_3 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["flasherase"] + [config.get('File_2', 'START_ADDR') + config.get('File_2', 'MAX_SIZE')])
+                print(" Download ap_updater.bin flasherase ")
+                print(cmd3_3)
+                p = subprocess.Popen(cmd3_3, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                for line in p.stdout:
+                    line_decode = line.decode(encoding='utf-8', errors='ignore')
+                    print(line_decode)
+
+                cmd3_3 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["burnone flexfile3"])
+                print(" Download ap_updater.bin burnone ")
+                print(cmd3_3)
+                p = subprocess.Popen(cmd3_3, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                for line in p.stdout:
+                    line_decode = line.decode(encoding='utf-8', errors='ignore')
+                    if "files transferred" in line_decode:
+                        print(line_decode)
+                        TIMEMONITOR += 1
+                        print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+
+                # download customer_fs.bin
+                cmd3_4 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["flasherase"] + [config.get('File_3', 'START_ADDR') + config.get('File_3', 'START_ADDR')])
+                print(" Download customer_fs.bin flasherase ")
+                print(cmd3_4)
+                p = subprocess.Popen(cmd3_4, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                for line in p.stdout:
+                    line_decode = line.decode(encoding='utf-8', errors='ignore')
+                    print(line_decode)
+
+                cmd3_4 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["burnone flexfile4"])
+                print(" Download customer_fs.bin burnone ")
+                print(cmd3_4)
+                p = subprocess.Popen(cmd3_4, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                for line in p.stdout:
+                    line_decode = line.decode(encoding='utf-8', errors='ignore')
+                    if "files transferred" in line_decode:
+                        print(line_decode)
+                        TIMEMONITOR += 1
+                        print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                        
+                if config.get('File', 'File_Count') == 4:
+                    # download customer_backup_fs.bin 
+                    cmd3_5 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["flasherase"] + [config.get('File_4', 'START_ADDR') + config.get('File_4', 'START_ADDR')])
+                    print(" Download customer_backup_fs.bin flasherase ")
+                    print(cmd3_5)
+                    p = subprocess.Popen(cmd3_5, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    for line in p.stdout:
+                        line_decode = line.decode(encoding='utf-8', errors='ignore')
+                        print(line_decode)
+
+                    cmd3_5 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["burnone flexfile5"])
+                    print(" Download customer_backup_fs.bin burnone ")
+                    print(cmd3_5)
+                    p = subprocess.Popen(cmd3_5, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    for line in p.stdout:
+                        line_decode = line.decode(encoding='utf-8', errors='ignore')
+                        if "files transferred" in line_decode:
+                            print(line_decode)
+                            TIMEMONITOR += 1
+                            print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+
+                # reset module
+                cmd5 = ' '.join([self.cmd[0]] + ["skipconnect 1"] + self.cmd[1:3] + ["sysreset"])
+                print(" sysreset ")
+                print(cmd5)
+                p = subprocess.Popen(cmd5, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                for line in p.stdout:
+                    line_decode = line.decode(encoding='utf-8', errors='ignore')
+                    print(line_decode)
+                print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+            elif self.string == 'FC41D':
+                TIMEMONITOR = 0
+                cmd1 = ' '.join(self.cmd)
+                print(" Burn FC41D firmware ")
+                print(cmd1)
+                p = subprocess.Popen(cmd1, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                for line in p.stdout:
+                    line_decode = line.decode(encoding='utf-8', errors='ignore')
+                    print(line_decode)
+                    if "Getting Bus" in line_decode:
+                        print("please restart")
+                    if "Unprotected Flash" in line_decode:
+                        TIMEMONITOR = 5
+                        print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    if "Begin EraseFlash" in line_decode:
+                        TIMEMONITOR = 10
+                        print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    if "EraseFlash ->pass" in line_decode:
+                        TIMEMONITOR = 30
+                        print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    if "Begin WriteFlash" in line_decode:
+                        for i in range(15):
+                            time.sleep(1)
+                            TIMEMONITOR += 4
+                            print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    if "Finished Successfully" in line_decode:
+                        print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+            else:
+                p = subprocess.Popen(self.cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                for line in p.stdout:
+                    print(line.decode(encoding='utf-8', errors='ignore'))
+                    line = line.decode(encoding='utf-8', errors='replace' if sys.version_info < (3, 5) else 'backslashreplace').rstrip()
+                    if self.string in line:
+                        TIMEMONITOR = line[line.find(self.string)+len(self.string):-1]
+                        print("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                        if '"progress" : 100,' in line:
+                            p = subprocess.Popen(r'taskkill /F /IM adownload.exe', shell=True)
+                            print("Progress : \033[32m{}%\033[0m".format(str(100)))
+                            return
 
 
 class QuecPyDownload(object):
@@ -290,7 +296,7 @@ class QuecPyDownload(object):
         self.device, self.baudrate, self.file_name = device, baudrate, file
         self.platform = None
         self.tmp_path = tempfile.mkdtemp()
-        print('Progress : preparing download package')
+        print('Progress : preparing firmware package')
         self.tmp_name = self.get_platform()
         self.firmware_handler()
 
@@ -591,7 +597,14 @@ def fatherDir(Path):
 
 def main():
     import argparse
+    global LOGFLAG
     cmd_parser = argparse.ArgumentParser(description="Download firmware on the QuecPython.")
+    cmd_parser.add_argument(
+        "-l",
+        "--log",
+        action="store_true",
+        help="Enable logging",
+    )
     cmd_parser.add_argument(
         "-d",
         "--device",
@@ -611,7 +624,8 @@ def main():
         help="input QuecPython firmware file"
     )
     args = cmd_parser.parse_args()
-    # print(args.device, args.baudrate, args.file)
+    LOGFLAG = args.log
+    print(args.device, args.baudrate, args.file, args.log)
     # open the connection to the qpyoard
     try:
         qpy = QuecPyDownload(args.device, args.baudrate, args.file)
