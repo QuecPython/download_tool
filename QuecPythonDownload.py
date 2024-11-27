@@ -38,7 +38,7 @@ class QuecPyDownloadError(Exception):
 
 def QuecPythonOutput(loginfo):
     if LOGFLAG:
-        print(loginfo)
+        print(loginfo, flush=True)
     else:
         if loginfo.startswith("Progress :"):
             print(loginfo, flush=True)
@@ -60,14 +60,14 @@ def run_command(cmd, dw_str, cwd):
                 QuecPythonOutput(line.decode(encoding='utf-8', errors='ignore'))
                 if dw_str in line.decode(encoding='utf-8', errors='ignore'):
                     TIMEMONITOR = i*10
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(str(TIMEMONITOR)))
+                    QuecPythonOutput("Progress : {}%".format(str(TIMEMONITOR)))
                     i += 1
                 if "DownLoad Passed" in line.decode(encoding='utf-8', errors='ignore'):
                     TIMEMONITOR = 100
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(str(TIMEMONITOR)))
+                    QuecPythonOutput("Progress : {}%".format(str(TIMEMONITOR)))
                     p = subprocess.Popen(r'taskkill /F /IM CmdDloader.exe',shell = True)
                 if "[ERROR] DownLoad Failed" in line.decode(encoding='utf-8', errors='ignore'):
-                    QuecPythonOutput("Progress : \033[31m=======Failed=======\033[0m")
+                    QuecPythonOutput("Progress : \033[31m=======Failed=======")
         elif dw_str == "[1]Upgrade:":
             p = subprocess.Popen(cmd, shell=True, cwd=cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             for line in p.stdout:
@@ -75,11 +75,11 @@ def run_command(cmd, dw_str, cwd):
                 QuecPythonOutput(line_decode)
                 if dw_str in line_decode:
                     TIMEMONITOR = line_decode.replace(dw_str, '').strip()[:-1]
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
                     if '[1]Upgrade: 100%' in line_decode:
                         TIMEMONITOR = 100
                         p = subprocess.Popen(r'taskkill /F /IM adownload.exe', shell=True)
-                        QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(str(TIMEMONITOR)))
+                        QuecPythonOutput("Progress : {}%".format(str(TIMEMONITOR)))
         elif dw_str == "[1]DL-":
             p = subprocess.Popen(cmd, shell=True, cwd=cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             i = 0
@@ -88,12 +88,12 @@ def run_command(cmd, dw_str, cwd):
                 QuecPythonOutput(line_decode)
                 if dw_str in line_decode:
                     TIMEMONITOR = str(i)
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
                     i += 2
                 if '[1]Total upgrade time is' in line_decode:
                     # p = subprocess.Popen(r'taskkill /F /IM adownload.exe', shell=True)
                     TIMEMONITOR = '100'
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
                     p = subprocess.Popen(r'taskkill /F /IM QMulti_DL_CMD_V2.1.exe',shell = True)
         elif dw_str == 'Add an WTPTP device: Device 1':
             p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -105,11 +105,11 @@ def run_command(cmd, dw_str, cwd):
                 if "please plug in USB device ...." in line_decode:
                     for i in range(10):
                         TIMEMONITOR = str(i*10)
-                        QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(str(i*10)))
+                        QuecPythonOutput("Progress : {}%".format(str(i*10)))
                         time.sleep(5)
                 if "Device 1:Download Completed successfully" in line_decode:
                     TIMEMONITOR = 100
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(str(TIMEMONITOR)))
+                    QuecPythonOutput("Progress : {}%".format(str(TIMEMONITOR)))
                     p = subprocess.Popen(r'taskkill /F /IM ResearchDownload.exe',shell = True)
         elif dw_str == 'Device':
             p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -122,9 +122,9 @@ def run_command(cmd, dw_str, cwd):
                         Status = info.get("Status")
                         if Status == "Programming":
                             TIMEMONITOR = info.get("Progress")
-                            QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                            QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
                         elif Status == "Fail":
-                            QuecPythonOutput("Progress : \033[31m=======Failed=======\033[0m")
+                            QuecPythonOutput("Progress : \033[31m=======Failed=======")
                 except Exception as e:
                     QuecPythonOutput("e: ", e)
         elif dw_str == 'Eigen':
@@ -153,7 +153,7 @@ def run_command(cmd, dw_str, cwd):
                 QuecPythonOutput(line_decode)
                 if "RtsConditionAssign" in line_decode:
                     TIMEMONITOR += 1
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
 
             # flash pkg2img
             cmd0 = ' '.join(cmd[:2] + ["pkg2img"])
@@ -165,7 +165,7 @@ def run_command(cmd, dw_str, cwd):
                 QuecPythonOutput(line_decode)
 
             TIMEMONITOR += 1
-            QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+            QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
 
             # 
             cmd2 = ' '.join([cmd[0]] + ["skipconnect 1"] + cmd[1:3] + ["burn"])
@@ -177,7 +177,7 @@ def run_command(cmd, dw_str, cwd):
                 if "files transferred" in line_decode:
                     QuecPythonOutput(line_decode)
                     TIMEMONITOR += 1
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
 
             # download ap_application.bin
             cmd3_2 = ' '.join([cmd[0]] + ["skipconnect 1"] + cmd[1:3] + ["flasherase"] + [config.get('File_1', 'START_ADDR') + config.get('File_1', 'MAX_SIZE')])
@@ -195,7 +195,7 @@ def run_command(cmd, dw_str, cwd):
                 line_decode = line.decode(encoding='utf-8', errors='ignore')
                 if "files transferred" in line_decode:
                     TIMEMONITOR += 1
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
 
             # download ap_updater.bin
             cmd3_3 = ' '.join([cmd[0]] + ["skipconnect 1"] + cmd[1:3] + ["flasherase"] + [config.get('File_2', 'START_ADDR') + config.get('File_2', 'MAX_SIZE')])
@@ -215,7 +215,7 @@ def run_command(cmd, dw_str, cwd):
                 if "files transferred" in line_decode:
                     QuecPythonOutput(line_decode)
                     TIMEMONITOR += 1
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
 
             # download customer_fs.bin
             cmd3_4 = ' '.join([cmd[0]] + ["skipconnect 1"] + cmd[1:3] + ["flasherase"] + [config.get('File_3', 'START_ADDR') + config.get('File_3', 'START_ADDR')])
@@ -235,7 +235,7 @@ def run_command(cmd, dw_str, cwd):
                 if "files transferred" in line_decode:
                     QuecPythonOutput(line_decode)
                     TIMEMONITOR += 1
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
                     
             if config.get('File', 'File_Count') == 4:
                 # download customer_backup_fs.bin 
@@ -256,7 +256,7 @@ def run_command(cmd, dw_str, cwd):
                     if "files transferred" in line_decode:
                         QuecPythonOutput(line_decode)
                         TIMEMONITOR += 1
-                        QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                        QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
 
             # reset module
             cmd5 = ' '.join([cmd[0]] + ["skipconnect 1"] + cmd[1:3] + ["sysreset"])
@@ -266,7 +266,7 @@ def run_command(cmd, dw_str, cwd):
             for line in p.stdout:
                 line_decode = line.decode(encoding='utf-8', errors='ignore')
                 QuecPythonOutput(line_decode)
-            QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+            QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
         elif dw_str == 'FC41D':
             TIMEMONITOR = 0
             cmd1 = ' '.join(cmd)
@@ -280,20 +280,20 @@ def run_command(cmd, dw_str, cwd):
                     QuecPythonOutput("please restart")
                 if "Unprotected Flash" in line_decode:
                     TIMEMONITOR = 5
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
                 if "Begin EraseFlash" in line_decode:
                     TIMEMONITOR = 10
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
                 if "EraseFlash ->pass" in line_decode:
                     TIMEMONITOR = 30
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
                 if "Begin WriteFlash" in line_decode:
                     for i in range(15):
                         time.sleep(1)
                         TIMEMONITOR += 4
-                        QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                        QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
                 if "Finished Successfully" in line_decode:
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
         else:
             p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             for line in p.stdout:
@@ -301,10 +301,10 @@ def run_command(cmd, dw_str, cwd):
                 line = line.decode(encoding='utf-8', errors='replace' if sys.version_info < (3, 5) else 'backslashreplace').rstrip()
                 if dw_str in line:
                     TIMEMONITOR = line[line.find(dw_str)+len(dw_str):-1]
-                    QuecPythonOutput("Progress : \033[32m{}%\033[0m".format(TIMEMONITOR))
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
                     if '"progress" : 100,' in line:
                         p = subprocess.Popen(r'taskkill /F /IM adownload.exe', shell=True)
-                        QuecPythonOutput("Progress :  \033[32m{}%\033[0m".format(str(100)))
+                        QuecPythonOutput("Progress :  {}%".format(str(100)))
                         return
 
 
@@ -506,7 +506,7 @@ class QuecPyDownload(object):
             else:
                 checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\NB", self.tmp_path.replace("/", "\\")+ "\\exes\\NB")
             cmd = [self.tmp_path.replace("/", "\\")+ "\\exes\\NB\\QMulti_DL_CMD_V2.1.exe", self.device[3:], self.baudrate, self.tmp_name]
-            self.tmp_path = self.tmp_path.replace("/", "\\")+ "\\NB"
+            self.tmp_path = self.tmp_path.replace("/", "\\")+ "\\exes\\NB"
             downloadProcess = '[1]DL-'
         elif self.platform.upper() == "EIGEN":
             if EXE_ABSOLUTE_PATH:
@@ -607,12 +607,11 @@ def checkExeFile(Path, temp_path=""):
         return
     elif ifExist(Path + ".tar.gz"):
         if EXE_ABSOLUTE_PATH:
-            os.system("tar -zxf " + Path + ".tar.gz -C " + EXE_ABSOLUTE_PATH + "\exes")
+            os.system("tar -zxf " + Path + ".tar.gz -C " + EXE_ABSOLUTE_PATH + "\\exes")
         else:
-            os.system("tar -zxf " + Path + ".tar.gz -C " + PROJECT_ABSOLUTE_PATH + "\exes")
+            os.system("tar -zxf " + Path + ".tar.gz -C " + PROJECT_ABSOLUTE_PATH + "\\exes")
             shutil.copytree(Path, temp_path)
             return
-
 
 
 def readJSON(jsonName):
@@ -645,7 +644,6 @@ def main():
     cmd_parser.add_argument(
         "-d",
         "--device",
-        default=os.environ.get("QUECPYTHON_DEVICE", "COM24"),
         help="the serial device of the QuecPython Download",
     )
     cmd_parser.add_argument(
@@ -657,14 +655,18 @@ def main():
     cmd_parser.add_argument(
         "-f", 
         "--file", 
-        default="firmware file",
         help="input QuecPython firmware file"
     )
     args = cmd_parser.parse_args()
     LOGFLAG = args.log
     # open the connection to the qpyoard
     try:
-        qpy = QuecPyDownload(args.device, args.baudrate, args.file)
+        QuecPythonOutput("SYS PATH: " + str(EXE_ABSOLUTE_PATH))
+        if args.device is None or args.file is None:
+            print("Please input the serial device and firmware file")
+            sys.exit(1)
+        else:
+            qpy = QuecPyDownload(args.device, args.baudrate, args.file)
     except QuecPyDownloadError as err:
         QuecPythonOutput(err)
         sys.exit(1)
