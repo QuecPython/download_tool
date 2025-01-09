@@ -1,8 +1,8 @@
-# QuecPython固件下载工具
+# QuecPython Firmware Download Tool
 
-中文 | [English](README_EN.md)
+[中文](README.md) | English
 
-## 概述
+## Overview
 
 整合QPYcom的固件下载部分为命令行工具
 
@@ -10,16 +10,16 @@
 
 支持多种文件格式的固件
 
-| 型号           | 烧录文件后缀 | 是否需要进入下载模式 | 使用的命令行工具       |
+| Model           | Burn file suffix	 | Download Mode Required | Tool file       |
 | -------------- | ------------ | -------------------- | ---------------------- |
-| EC600U、EC200U | pac、bin     | 否                   | CmdDloader.exe         |
-| EC600N、EC600M | zip、bin     | 是                   | adownload.exe          |
-| BG95           | mbn、bin     | 否                   | QMulti_DL_CMD_V2.1.exe |
-| EC800E、EC600E | binpkg、bin  | 否                   | flashtoolcli1.exe      |
-| FCM360W        | bin          | 否                   | EswinFlashTool.exe     |
-| BC25           | lod、bin     | 否                   | QMulti_DL_CMD_V2.1.exe |
-| EC200A         | blf、bin     | 否                   | SWDConsole.exe         |
-| FC41D          | bin          | 否                   | bk_loader.exe          |
+| EC600U、EC200U | pac、bin     | No                   | CmdDloader.exe         |
+| EC600N、EC600M | zip、bin     | Yes                   | adownload.exe          |
+| BG95           | mbn、bin     | No                   | QMulti_DL_CMD_V2.1.exe |
+| EC800E、EC600E | binpkg、bin  | No                   | flashtoolcli1.exe      |
+| FCM360W        | bin          | No                   | EswinFlashTool.exe     |
+| BC25           | lod、bin     | No                   | QMulti_DL_CMD_V2.1.exe |
+| EC200A         | blf、bin     | No                   | SWDConsole.exe         |
+| FC41D          | bin          | No                   | bk_loader.exe          |
 
 ## 命令行格式
 
