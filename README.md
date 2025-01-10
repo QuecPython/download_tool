@@ -1,69 +1,79 @@
-# QuecPython固件下载工具
+# QuecPython Firmware Download Tool
 
-中文 | [English](README_EN.md)
+[中文](README_ZH.MD) | English
 
-## 概述
+## Overview
 
-整合QPYcom的固件下载部分为命令行工具
+Integrate the firmware download component of QPYcom into a command-line tool.
 
-将不同平台的固件下载工具整合为QuecPython专用的下载工具，通过统一的命令行调用
+Combine firmware download tools for different platforms into a dedicated QuecPython download tool, accessible via a unified command-line interface.
 
-支持多种文件格式的固件
+Support firmware in multiple file formats.
 
-| 型号           | 烧录文件后缀 | 是否需要进入下载模式 | 使用的命令行工具       |
+| platforms           | Firmware File Extensions | Does it require entering download mode | Command-line tool used  |
 | -------------- | ------------ | -------------------- | ---------------------- |
-| EC600U、EC200U | pac、bin     | 否                   | CmdDloader.exe         |
-| EC600N、EC600M | zip、bin     | 是                   | adownload.exe          |
-| BG95           | mbn、bin     | 否                   | QMulti_DL_CMD_V2.1.exe |
-| EC800E、EC600E | binpkg、bin  | 否                   | flashtoolcli1.exe      |
-| FCM360W        | bin          | 否                   | EswinFlashTool.exe     |
-| BC25           | lod、bin     | 否                   | QMulti_DL_CMD_V2.1.exe |
-| EC200A         | blf、bin     | 否                   | SWDConsole.exe         |
-| FC41D          | bin          | 否                   | bk_loader.exe          |
+| EC600U、EC200U | pac、bin     | no                   | CmdDloader.exe         |
+| EC600N、EC600M | zip、bin     | yes                   | adownload.exe          |
+| BG95           | mbn、bin     | no                   | QMulti_DL_CMD_V2.1.exe |
+| EC800E、EC600E | binpkg、bin  | no                   | flashtoolcli1.exe      |
+| FCM360W        | bin          | no                   | EswinFlashTool.exe     |
+| BC25           | lod、bin     | no                   | QMulti_DL_CMD_V2.1.exe |
+| EC200A         | blf、bin     | no                   | SWDConsole.exe         |
+| FC41D          | bin          | no                   | bk_loader.exe          |
 
-## 命令行格式
+## Command-line 
 
 ```bash
-QuecPythonDownload.exe -l -d com6 -b 115200 -f "固件文件名"
+QuecPythonDownload.exe -l -d com6 -b 115200 -f "firmware file name"
 ```
 
-- -l  是否打开原始工具烧录日志输出。用于debug，正常使用可以不加此参数
-- -d 设备串口，有烧录口传烧录口，需要进入下载模式传at口
-- -b 串口波特率
-- -f 固件包文件名
+- -l: Enable raw tool burn log output. Used for debugging; this parameter can be omitted during normal use.
+- -d: Device COM port. Use the burn port for burning, and the AT port for entering download mode.
+- -b: Serial port baud rate.
+- -f: Firmware package file name.
 
-## 下载流程
 
-1. 根据固件文件后缀区分固件下载平台，如果是bin文件，先解压后根据解压后的文件夹中son文件区分固件平台
-2. 根据固件平台调用不同的原厂命令行工具，进入下载状态
-3. 再根据不同平台的下载工具返回的进度信息解析出下载进度，统一返回下载进度信息
+## Download Process
 
-## 编译流程
+1.Distinguish the firmware download platform based on the firmware file extension. For .bin files, first extract them, and then use the son file in the extracted folder to identify the firmware platform.
+2.Call the appropriate original factory command-line tool based on the firmware platform to enter download mode.
+3.Parse the progress information returned by the different platform-specific download tools to obtain a unified download progress report.
 
-代码目录
+## Compilation Process
+(Provide details for the compilation process here.)
+
+code folder
 
 ```
 |-- QuecPythonDownload.py
 |-- README.md
 |-- exes
-    |--aboot
-    |--blf_tools
-    |--Eigen
-    |--FC41D
-    |--FCM360W
-    |--NB
-    |--rda
+	|--aboot
+	|--blf_tools
+	|--Eigen
+	|--FC41D
+	|--FCM360W
+	|--NB
+	|--rda
 ```
 
-打包需要将QuecPythonDownload.py和依赖的exes目录下所有文件打包成exe，并且执行不依赖环境
 
-PyInstaller如何封装多个文件及文件夹
 
-1. 在命令行窗口中输入：`pyi-makespec QuecPythonDownload.py`生成项目配置文件，这时候文件夹中会多出一个文件`QuecPythonDownload.spec`
+Packaging Instructions to package, include QuecPythonDownload.py and all files in the dependent exes directory into a single executable file. The executable should run without relying on the environment.
 
-2. 打开`QuecPythonDownload.spec`
+How to Package Multiple Files and Folders Using PyInstaller
+1. In the command line, enter:
 
-   ```python
+```
+pyi-makespec QuecPythonDownload.py  
+
+```
+
+This will generate a project configuration file. A new file, QuecPythonDownload.spec, will appear in the folder.
+
+2. Open the QuecPythonDownload.spec file.
+
+```python
    # -*- mode: python ; coding: utf-8 -*-
    
    
@@ -115,16 +125,17 @@ PyInstaller如何封装多个文件及文件夹
        name='QuecPythonDownload',
    )
    
-   ```
+```
 
-3. 把所有的`.py`文件写到`a=Analysis()`中的首个列表元素中，如果文件和`QuecPythonDownload.py`在同一目录下，则直接写文件名，如果是在文件夹内，则需要加上相对地址（绝对地址也行）
+3. Add all .py files to the first list element in a=Analysis(). If the files are in the same directory as QuecPythonDownload.py, simply use the file name. If they are located in a folder, include the relative path (or absolute path if preferred).
 
-4. 把所有的非`.py`文件放到`a=Analysis()`中的`datas`参数值中，`datas`的每个元素含两个参数，前一个是存放非`.py`文件的路径，后一个是存放的文件夹名称。在封装时，会根据这个文件夹路径搜索需要拷贝的非`.py`文件。
+4. Place all non-.py files in the datas parameter of a=Analysis(). Each element in datas contains two parameters: the first is the path to the non-.py file, and the second is the folder name where the files will be stored. During packaging, the specified folder path will be used to locate and copy the required non-.py files.
 
-   ```
+
+```
     datas=[("C:\\****\\aboot.tar.gz", "exes")],
-   ```
+```
 
-5. 最后，保存修改好的main.spec，同样的，在命令行窗口中输入：pyinstaller QuecPythonDownload.spec
+5. Finally, save the modified main.spec file. Similarly, enter the following command in the terminal: pyinstaller QuecPythonDownload.spec
 
 

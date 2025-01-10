@@ -1,8 +1,6 @@
-# QuecPython Firmware Download Tool
+# QuecPython固件下载工具
 
-[中文](README.md) | English
-
-## Overview
+## 概述
 
 整合QPYcom的固件下载部分为命令行工具
 
@@ -10,16 +8,16 @@
 
 支持多种文件格式的固件
 
-| Model           | Burn file suffix	 | Download Mode Required | Tool file       |
+| 型号           | 烧录文件后缀 | 是否需要进入下载模式 | 使用的命令行工具       |
 | -------------- | ------------ | -------------------- | ---------------------- |
-| EC600U、EC200U | pac、bin     | No                   | CmdDloader.exe         |
-| EC600N、EC600M | zip、bin     | Yes                   | adownload.exe          |
-| BG95           | mbn、bin     | No                   | QMulti_DL_CMD_V2.1.exe |
-| EC800E、EC600E | binpkg、bin  | No                   | flashtoolcli1.exe      |
-| FCM360W        | bin          | No                   | EswinFlashTool.exe     |
-| BC25           | lod、bin     | No                   | QMulti_DL_CMD_V2.1.exe |
-| EC200A         | blf、bin     | No                   | SWDConsole.exe         |
-| FC41D          | bin          | No                   | bk_loader.exe          |
+| EC600U、EC200U | pac、bin     | 否                   | CmdDloader.exe         |
+| EC600N、EC600M | zip、bin     | 是                   | adownload.exe          |
+| BG95           | mbn、bin     | 否                   | QMulti_DL_CMD_V2.1.exe |
+| EC800E、EC600E | binpkg、bin  | 否                   | flashtoolcli1.exe      |
+| FCM360W        | bin          | 否                   | EswinFlashTool.exe     |
+| BC25           | lod、bin     | 否                   | QMulti_DL_CMD_V2.1.exe |
+| EC200A         | blf、bin     | 否                   | SWDConsole.exe         |
+| FC41D          | bin          | 否                   | bk_loader.exe          |
 
 ## 命令行格式
 
@@ -46,13 +44,13 @@ QuecPythonDownload.exe -l -d com6 -b 115200 -f "固件文件名"
 |-- QuecPythonDownload.py
 |-- README.md
 |-- exes
-    |--aboot
-    |--blf_tools
-    |--Eigen
-    |--FC41D
-    |--FCM360W
-    |--NB
-    |--rda
+	|--aboot
+	|--blf_tools
+	|--Eigen
+	|--FC41D
+	|--FCM360W
+	|--NB
+	|--rda
 ```
 
 打包需要将QuecPythonDownload.py和依赖的exes目录下所有文件打包成exe，并且执行不依赖环境
