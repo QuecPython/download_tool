@@ -200,7 +200,8 @@ class QuecPyDownload(object):
                 checkExeFile(EXE_ABSOLUTE_PATH + "\\exes\\blf_tools")
             else:
                 checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\blf_tools", self.tmp_path.replace("/", "\\") + "\\exes\\blf_tools")
-            cmd = [self.tmp_path.replace("/","\\") + "\\SWDConsole.exe", '-f', self.tmp_name]
+
+            cmd = [self.tmp_path.replace("/","\\") + "\\exes\\blf_tools\\SWDConsole.exe", '-f', self.tmp_name]
             downloadProcess = 'Add an WTPTP device: Device 1'
         elif self.platform.upper() == "MDM9X05":
             if EXE_ABSOLUTE_PATH:
@@ -234,7 +235,6 @@ class QuecPyDownload(object):
                 checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\FC41D", self.tmp_path.replace("/", "\\") + "\\exes\\FC41D")
             cmd = [self.tmp_path.replace("/","\\") + "\\exes\\FC41D\\bk_loader.exe", 'download', '-p', self.device[3:], '-b', "921600", '-i', self.tmp_name]
             downloadProcess = 'FC41D'
-        # QuecPythonOutput("Progress : pre-download complete ")
         self.download_handler(cmd, downloadProcess, download_overtime)
 
     def download_handler(self, cmd, downloadProcess, download_overtime):
