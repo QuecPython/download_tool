@@ -338,7 +338,7 @@ def run_command(cmd, dw_str, cwd):
                         QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
                 if "Finished Successfully" in line_decode:
                     QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
-        else:
+        else:  # if dw_str / downloadProcess is progress or another value
             p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             for line in p.stdout:
                 QuecPythonOutput(line.decode(encoding='utf-8', errors='ignore'))
@@ -346,8 +346,9 @@ def run_command(cmd, dw_str, cwd):
                 if dw_str in line:
                     TIMEMONITOR = line[line.find(dw_str)+len(dw_str):-1]
                     QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
+                    
+                    # when flasing is finished, kill task
                     if '"progress" : 100,' in line:
                         p = subprocess.Popen(r'taskkill /F /IM adownload.exe', shell=True)
                         QuecPythonOutput("Progress :  {}%".format(str(100)))
                         return
-
