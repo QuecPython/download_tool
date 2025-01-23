@@ -226,7 +226,7 @@ class QuecPyDownload(object):
                 checkExeFile(EXE_ABSOLUTE_PATH + "\\exes\\FCM360W")
             else:
                 checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\FCM360W", self.tmp_path.replace("/", "\\") + "\\exes\\FCM360W")
-            cmd = [self.tmp_path.replace("/","\\") + "\\exes\\EswinFlashTool.exe", '-p', self.device[3:], '-b', "921600", '-file', self.tmp_name]
+            cmd = [self.tmp_path.replace("/","\\") + "\\exes\\FCM360W\\EswinFlashTool.exe", '-p', self.device[3:], '-b', "921600", '-file', self.tmp_name]
             downloadProcess = 'Device'
         elif self.platform.upper() == "FC41D":
             if EXE_ABSOLUTE_PATH:
