@@ -9,6 +9,7 @@ import serial
 import serial.tools.list_ports
 import zipfile
 import codecs
+import tarfile
 
 # exe temp path
 EXE_ABSOLUTE_PATH = sys._MEIPASS if getattr(sys,'frozen',False) else False
@@ -61,17 +62,21 @@ def unzipFile(src, dst):
     with zipfile.ZipFile(src, 'r') as zip_ref:
         zip_ref.extractall(dst)
 
-def checkExeFile(Path, temp_path=""):
-    if ifExist(Path):
-        shutil.copytree(Path, temp_path)
+def checkExeFile(path, temp_path=""):
+    # unzip tar file or copy exist file
+
+    if ifExist(path):
+        shutil.copytree(path, temp_path)
         return
-    elif ifExist(Path + ".tar.gz"):
-        if EXE_ABSOLUTE_PATH:
-            os.system("tar -zxf " + Path + ".tar.gz -C " + EXE_ABSOLUTE_PATH + "\\exes")
-        else:
-            os.system("tar -zxf " + Path + ".tar.gz -C " + PROJECT_ABSOLUTE_PATH + "\\exes")
-            shutil.copytree(Path, temp_path)
-            return
+    elif ifExist(path + ".tar.gz"):
+        dist = EXE_ABSOLUTE_PATH if EXE_ABSOLUTE_PATH else PROJECT_ABSOLUTE_PATH
+
+        with tarfile.open(path + ".tar.gz", "r:gz") as tar:
+            tar.extractall(path=os.path.join(dist, "exes"))
+
+        if not EXE_ABSOLUTE_PATH:
+            shutil.copytree(path, temp_path)
+        return
 
 
 def readJSON(jsonName):
@@ -173,18 +178,6 @@ def run_command(cmd, dw_str, cwd):
                     QuecPythonOutput("e: ", e)
         elif dw_str == 'Eigen':
             TIMEMONITOR = 0
-            # # pkg2img
-            # cmd0 = ' '.join(cmd[:2] + ["pkg2img"])
-            # QuecPythonOutput(" pkg2img ")
-            # QuecPythonOutput(cmd0)
-            # p = subprocess.Popen(cmd0, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            # for line in p.stdout:
-            #     line_decode = line.decode(encoding='utf-8', errors='ignore')
-            #     QuecPythonOutput(line_decode)
-
-            # process += 1
-            # ql.set_value("timeMonitor", str(process))
-            # ql.get_value('pub').sendMessage('Progress', arg1=str(process))
 
             config = configparser.ConfigParser(interpolation=None)
             config.read(cwd + "\\" + [i for i in os.listdir(cwd) if i not in ("platform_config.json", dw_str)][0] + "\\quec_download_config.ini")
@@ -211,7 +204,6 @@ def run_command(cmd, dw_str, cwd):
             TIMEMONITOR += 1
             QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
 
-            # 
             cmd2 = ' '.join([cmd[0]] + ["skipconnect 1"] + cmd[1:3] + ["burn"])
             QuecPythonOutput(" Burn firmware ")
             QuecPythonOutput(cmd2)

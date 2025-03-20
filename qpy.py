@@ -20,54 +20,10 @@ class QuecPyDownload(object):
 
     def get_platform(self):
         if isZip(self.file_name):
-            unzipFile(self.file_name, self.tmp_path)
-            if ifExist(self.tmp_path + "\\platform_config.json"):
-                try:
-                    data = readJSON(self.tmp_path + "\\platform_config.json")
-                    self.platform = data["platform"].strip()
-                    if self.platform.upper() in ["ASR", "ASR1601", "ASR1606"]:
-                        newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
-                        shutil.copyfile(PROJECT_ABSOLUTE_PATH + "\\exes\\aboot\\adownload.exe", self.tmp_path.replace("/","\\") + "\\adownload.exe")
-                    elif self.platform.lower() in ["unisoc", "unisoc8910", "unisoc8850"]:
-                        newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
-                    elif self.platform.upper() == "RDA8908A":
-                        newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
-                    elif self.platform.upper() == "MDM9X05":
-                        newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0] + "\\firehose\\partition.mbn"
-                    elif self.platform.upper() == "ASR1803S":
-                        newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0] + "\\Falcon_EVB_QSPI_Nor_LWG_Only_Nontrusted_PM802_LPDDR2.blf"
-                    elif self.platform.upper() == "FCM360W":
-                        newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
-                    elif self.platform.upper() == "FC41D":
-                        newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
-                    elif self.platform.upper() == "EIGEN":
-                        fdir = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
-                        newFW = fdir + "\\at_command.binpkg"
-                        self.eigen_config(fdir, newFW)
-                    else:
-                        return None
-                    newFW = os.path.join(self.tmp_path, newFW)
-                    if not ifExist(newFW):
-                        return None
-                except Exception as e:
-                    QuecPythonOutput(e)
-                    return None
-            else:
-                if ifExist(self.tmp_path + "\\system.img"):
-                    self.platform = "ASR1601"
-                    shutil.copyfile(self.file_name, self.tmp_path + "\\" + self.file_name.split("\\")[-1])
-                    newFW = self.tmp_path + "\\" + self.file_name.split("\\")[-1]
-                else:
-                    return None
+            newFW = self.zip_handler()
         else:
             if self.file_name[-3:].lower() == "pac":
                 self.platform = "unisoc"
-                # self.config = configparser.ConfigParser(interpolation=None)
-                # self.config.read(PROJECT_ABSOLUTE_PATH + "\\exes\\rda\\ResearchDownload.ini")
-                # if self.config["Options"]["EraseAll"] != "0":
-                #     self.config["Options"]["EraseAll"] = "0"
-                #     with open(PROJECT_ABSOLUTE_PATH + "\\exes\\rda\\ResearchDownload.ini", 'w+') as configfile:
-                #         self.config.write(configfile)
                 shutil.copyfile(self.file_name, self.tmp_path + "\\" + self.file_name.split("\\")[-1])
                 newFW = self.tmp_path + "\\" + self.file_name.split("\\")[-1]
             elif self.file_name[-3:].lower() == "lod":
@@ -287,3 +243,48 @@ class QuecPyDownload(object):
             pass
         return
 
+    def zip_handler(self):
+        # unzip file, and return path to fw
+
+        unzipFile(self.file_name, self.tmp_path)
+        if ifExist(self.tmp_path + "\\platform_config.json"):
+            try:
+                data = readJSON(self.tmp_path + "\\platform_config.json")
+                self.platform = data["platform"].strip()
+                if self.platform.upper() in ["ASR", "ASR1601", "ASR1606"]:
+                    newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
+                    shutil.copyfile(PROJECT_ABSOLUTE_PATH + "\\exes\\aboot\\adownload.exe", self.tmp_path.replace("/","\\") + "\\adownload.exe")
+                # get .pac file from unzip folder
+                elif self.platform.lower() in ["unisoc", "unisoc8910", "unisoc8850"]:
+                    newFW = [i for i in os.listdir(self.tmp_path) if i.endswith('.pac')][0]
+                # get .lod file from unzip folder
+                elif self.platform.upper() == "RDA8908A":
+                    newFW = [i for i in os.listdir(self.tmp_path) if i.endswith('.lod')][0]
+                elif self.platform.upper() == "MDM9X05":
+                    newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0] + "\\firehose\\partition.mbn"
+                elif self.platform.upper() == "ASR1803S":
+                    newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0] + "\\Falcon_EVB_QSPI_Nor_LWG_Only_Nontrusted_PM802_LPDDR2.blf"
+                elif self.platform.upper() == "FCM360W":
+                    newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
+                elif self.platform.upper() == "FC41D":
+                    newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
+                elif self.platform.upper() == "EIGEN":
+                    fdir = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
+                    newFW = fdir + "\\at_command.binpkg"
+                    self.eigen_config(fdir, newFW)
+                else:
+                    return None
+                newFW = os.path.join(self.tmp_path, newFW)
+                if not ifExist(newFW):
+                    return None
+            except Exception as e:
+                QuecPythonOutput(e)
+                return None
+        else:
+            if ifExist(self.tmp_path + "\\system.img"):
+                self.platform = "ASR1601"
+                shutil.copyfile(self.file_name, self.tmp_path + "\\" + self.file_name.split("\\")[-1])
+                newFW = self.tmp_path + "\\" + self.file_name.split("\\")[-1]
+            else:
+                return None
+        return newFW
