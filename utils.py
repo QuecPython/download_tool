@@ -41,10 +41,12 @@ class QuecPyDownloadError(Exception):
 
 
 def QuecPythonOutput(loginfo):
+    # print logs to user, based on flag log
+
     if app_config['log']:
         print(loginfo, flush=True)
     else:
-        if loginfo.startswith("Progress :"):
+        if isinstance(loginfo, str) and loginfo.startswith("Progress :"):
             print(loginfo, flush=True)
 
 def comPortNumber(vid_pid):

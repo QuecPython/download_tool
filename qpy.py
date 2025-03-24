@@ -119,7 +119,7 @@ class QuecPyDownload(object):
         download_overtime = 45
         # into download mode
         if self.platform in ["ASR", "ASR1601", "ASR1606", "unisoc", "unisoc8910", "unisoc8850", "EIGEN"]:
-            # TODO 如果选择了烧录口
+            # TODO If you select the burn port
             conn = serial.Serial(self.device, self.baudrate)
             conn.write(('at+qdownload=1\r\n').encode())
             conn.close()
@@ -252,8 +252,11 @@ class QuecPyDownload(object):
                 data = readJSON(self.tmp_path + "\\platform_config.json")
                 self.platform = data["platform"].strip()
                 if self.platform.upper() in ["ASR", "ASR1601", "ASR1606"]:
-                    newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
-                    shutil.copyfile(PROJECT_ABSOLUTE_PATH + "\\exes\\aboot\\adownload.exe", self.tmp_path.replace("/","\\") + "\\adownload.exe")
+                    # for ASR original fw
+                    if 'QPY_OCPU_V0001_EG810M_EULA_FW.zip' in os.listdir(self.tmp_path):
+                        newFW = 'QPY_OCPU_V0001_EG810M_EULA_FW.zip'
+                    else:
+                        newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
                 # get .pac file from unzip folder
                 elif self.platform.lower() in ["unisoc", "unisoc8910", "unisoc8850"]:
                     newFW = [i for i in os.listdir(self.tmp_path) if i.endswith('.pac')][0]
