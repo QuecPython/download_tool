@@ -28,9 +28,11 @@ def main():
     cmd_parser.add_argument(
         "-f", 
         "--file", 
-        help="input QuecPython firmware file"
+        help="input QuecPython firmware file",
+        nargs='+'  # for file names with space
     )
     args = cmd_parser.parse_args()
+
     app_config['log'] = args.log
     # open the connection to the qpyoard
     try:
@@ -39,6 +41,7 @@ def main():
             print("Please input the serial device and firmware file")
             sys.exit(1)
         else:
+            args.file = ' '.join(args.file)  # for file names with space
             print(args.device, args.baudrate, args.file)
             qpy = QuecPyDownload(args.device, args.baudrate, args.file)
     except QuecPyDownloadError as err:
