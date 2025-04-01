@@ -20,6 +20,9 @@ Support firmware in multiple file formats.
 | BC25           | lod、bin     | no                   | QMulti_DL_CMD_V2.1.exe |
 | EC200A         | blf、bin     | no                   | SWDConsole.exe         |
 | FC41D          | bin          | no                   | bk_loader.exe          |
+| BG960S         | bin          | no                   | ImageBurnTool.exe      |
+
+**Note**: BG950S requires manual restart after "Port is open" message
 
 ## Command-line 
 

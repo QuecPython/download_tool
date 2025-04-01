@@ -15,7 +15,8 @@ a = Analysis(
         ('exes/FC41D.tar.gz','./exes'),
         ('exes/FCM360W.tar.gz','./exes'),
         ('exes/NB.tar.gz','./exes'),
-        ('exes/rda.tar.gz','./exes')
+        ('exes/rda.tar.gz','./exes'),
+        ('exes/ImageBurnTool.tar.gz','./exes')
     ],
     hiddenimports=[],
     hookspath=[],

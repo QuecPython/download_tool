@@ -19,6 +19,7 @@ class QuecPyDownload(object):
         self.firmware_handler()
 
     def get_platform(self):
+        # for .bin zip files
         if isZip(self.file_name):
             newFW = self.zip_handler()
         else:
@@ -191,6 +192,31 @@ class QuecPyDownload(object):
                 checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\FC41D", self.tmp_path.replace("/", "\\") + "\\exes\\FC41D")
             cmd = [self.tmp_path.replace("/","\\") + "\\exes\\FC41D\\bk_loader.exe", 'download', '-p', self.device[3:], '-b', "921600", '-i', self.tmp_name]
             downloadProcess = 'FC41D'
+        elif self.platform.upper() == "BG950S":
+            # open fw port
+            conn = serial.Serial(self.device, self.baudrate)
+            time.sleep(0.5)
+            QuecPythonOutput("Port is open")
+
+            # get fw tool path
+            if EXE_ABSOLUTE_PATH:
+                checkExeFile(EXE_ABSOLUTE_PATH + "\\exes\\ImageBurnTool")
+            else:
+                checkExeFile(PROJECT_ABSOLUTE_PATH + "\\exes\\ImageBurnTool", self.tmp_path.replace("/", "\\") + "\\exes\\ImageBurnTool")
+
+            # get fw folders path
+            for i in os.listdir(self.tmp_name):
+                if "CORE" in i:
+                    CORE = os.path.join(self.tmp_name, i)
+                if "AVAS" in i:
+                    AVAS = os.path.join(self.tmp_name, i)
+
+            # command with ImageBurnTool fw folders
+            cmd = [self.tmp_path.replace("/","\\") + "\\exes\\ImageBurnTool\\ImageBurnTool.exe", "-v",'"%s"'%CORE, "/0 /1 /2 /14 /3 /12 /4 /19 /20 /22 /18",
+                   "-va", '"%s"'%AVAS, "/a0 /a1", "-uartparams 0", self.device[3:], "3000000", "1"]
+
+            downloadProcess = "BG950S"
+
         self.download_handler(cmd, downloadProcess, download_overtime)
 
     def download_handler(self, cmd, downloadProcess, download_overtime):
@@ -201,7 +227,6 @@ class QuecPyDownload(object):
         T1 = threading.Thread(target=run_command, args=(cmd, downloadProcess, self.tmp_path, ))
         T1.start()
     
-        # run_command(cmd, downloadProcess, self.tmp_path)
 
     def downloadTimeMonitor(self, out_time):
         global TIMEMONITOR
@@ -283,11 +308,22 @@ class QuecPyDownload(object):
             except Exception as e:
                 QuecPythonOutput(e)
                 return None
+        elif ifExist(self.tmp_path + "\\system.img"):
+            self.platform = "ASR1601"
+            shutil.copyfile(self.file_name, self.tmp_path + "\\" + self.file_name.split("\\")[-1])
+            newFW = self.tmp_path + "\\" + self.file_name.split("\\")[-1]
         else:
-            if ifExist(self.tmp_path + "\\system.img"):
-                self.platform = "ASR1601"
-                shutil.copyfile(self.file_name, self.tmp_path + "\\" + self.file_name.split("\\")[-1])
-                newFW = self.tmp_path + "\\" + self.file_name.split("\\")[-1]
-            else:
-                return None
+            # for BG950S, check these 2 folders
+            AVAS = False
+            CORE = False
+            for i in os.listdir(self.tmp_path):
+                if "AVAS" in i:
+                    AVAS = True
+                if "CORE" in i:
+                    CORE = True
+            if AVAS and CORE:
+                self.platform = "BG950S"
+                newFW = os.path.join(self.tmp_path)
+                return newFW
+            return None
         return newFW
