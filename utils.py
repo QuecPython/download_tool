@@ -332,6 +332,46 @@ def run_command(cmd, dw_str, cwd):
                         QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
                 if "Finished Successfully" in line_decode:
                     QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
+        # for BG950S, we need manual restart
+        elif dw_str == 'BG950S':
+            p = subprocess.Popen(" ".join(cmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1, universal_newlines=True)
+            TIMEMONITOR = 0
+            
+            # For every step log + increase monitor by 10%
+            for line in p.stdout:
+                if '"u-boot.bin" to device ... (100% completed)      Done' in line:
+                    TIMEMONITOR += 10
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
+                elif '"app_fw.bin" to device ... (100% completed)      Done' in line:
+                    TIMEMONITOR += 10
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
+                elif '"srm.bin" to device ... (100% completed)      Done' in line:
+                    TIMEMONITOR += 10
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
+                elif '"ltec_fw.bin" to device ... (100% completed)      Done' in line:
+                    TIMEMONITOR += 10
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
+                elif '"catm_phy_fw.bin" to device ... (100% completed)      Done' in line:
+                    TIMEMONITOR += 10
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
+                elif '"nb_phy_fw.bin" to device ... (100% completed)      Done' in line:
+                    TIMEMONITOR += 10
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
+                elif '"rfm_fw.bin" to device ... (100% completed)      Done' in line:
+                    TIMEMONITOR += 10
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
+                elif '"mcu_fw.bin" to device ... (100% completed)      Done' in line:
+                    TIMEMONITOR += 10
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
+                elif '"srd_phy_fw.bin" to device ... (100% completed)      Done' in line:
+                    TIMEMONITOR += 10
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
+                elif "********   Complete   ********" in line:
+                    TIMEMONITOR = 100
+                    QuecPythonOutput("Progress : {}%".format(TIMEMONITOR))
+                    QuecPythonOutput("Progress : Download successfull")
+                elif "ERROR:" in line:
+                    QuecPythonOutput("=======Failed=======")
         else:  # if dw_str / downloadProcess is progress or another value
             p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             for line in p.stdout:
