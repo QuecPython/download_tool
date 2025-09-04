@@ -277,11 +277,16 @@ class QuecPyDownload(object):
                 data = readJSON(self.tmp_path + "\\platform_config.json")
                 self.platform = data["platform"].strip()
                 if self.platform.upper() in ["ASR", "ASR1601", "ASR1606"]:
+                    not_fw_file = ["platform_config.json", "base_library.zip", "exes"]  # these names are not fw files or folders
                     # for ASR original fw
                     if 'QPY_OCPU_V0001_EG810M_EULA_FW.zip' in os.listdir(self.tmp_path):
                         newFW = 'QPY_OCPU_V0001_EG810M_EULA_FW.zip'
                     else:
-                        newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0]
+                        # Special case for EC600M_CNLE
+                        if 'QPY_OCPU_V0005_EC600M_CNLE_FW.zip' in os.listdir(self.tmp_path):
+                            newFW = 'QPY_OCPU_V0005_EC600M_CNLE_FW.zip'
+                        else:
+                            newFW = [i for i in os.listdir(self.tmp_path) if i not in not_fw_file][0]
                 # get .pac file from unzip folder
                 elif self.platform.lower() in ["unisoc", "unisoc8910", "unisoc8850"]:
                     newFW = [i for i in os.listdir(self.tmp_path) if i.endswith('.pac')][0]
