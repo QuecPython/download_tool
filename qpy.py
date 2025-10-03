@@ -15,7 +15,7 @@ class QuecPyDownload(object):
         self.platform = None
         self.tmp_path = EXE_ABSOLUTE_PATH if EXE_ABSOLUTE_PATH else tempfile.mkdtemp() 
         QuecPythonOutput('Progress : preparing firmware package')
-        self.tmp_name = self.get_platform()
+        self.tmp_name = self.get_platform()  # get platform and copy fw to tmp folder and unzip file
         self.firmware_handler()
 
     def get_platform(self):
@@ -269,15 +269,31 @@ class QuecPyDownload(object):
         return
 
     def zip_handler(self):
-        # unzip file, and return path to fw
+        current_tmp_path = self.tmp_path  # save current tmp path
 
+        # unzip file, and return path to fw
         unzipFile(self.file_name, self.tmp_path)
+
+        # If there's only one folder (ignore files) in tmp_path, set tmp_path to that folder,
+        # but only if platform_config.json and system.img do not exist
+        if not ifExist(os.path.join(self.tmp_path, "platform_config.json")) and not ifExist(os.path.join(self.tmp_path, "system.img")):
+            folders = [f for f in os.listdir(self.tmp_path) if os.path.isdir(os.path.join(self.tmp_path, f)) and f != 'exes']
+            if len(folders) == 1:
+                self.tmp_path = os.path.join(self.tmp_path, folders[0])
+                bin_files = [f for f in os.listdir(self.tmp_path) if f.lower().endswith('.bin')]
+
+                # check if there's .bin inside .zip
+                if len(bin_files) == 1:
+                    self.file_name = os.path.join(self.tmp_path, bin_files[0])
+                    unzipFile(self.file_name, self.tmp_path)
+
         if ifExist(self.tmp_path + "\\platform_config.json"):
             try:
                 data = readJSON(self.tmp_path + "\\platform_config.json")
+                
                 self.platform = data["platform"].strip()
+                not_fw_file = ["platform_config.json", "base_library.zip", "exes"]  # these names are not fw files or folders
                 if self.platform.upper() in ["ASR", "ASR1601", "ASR1606"]:
-                    not_fw_file = ["platform_config.json", "base_library.zip", "exes"]  # these names are not fw files or folders
                     # for ASR original fw
                     if 'QPY_OCPU_V0001_EG810M_EULA_FW.zip' in os.listdir(self.tmp_path):
                         newFW = 'QPY_OCPU_V0001_EG810M_EULA_FW.zip'
@@ -293,8 +309,12 @@ class QuecPyDownload(object):
                 # get .lod file from unzip folder
                 elif self.platform.upper() == "RDA8908A":
                     newFW = [i for i in os.listdir(self.tmp_path) if i.endswith('.lod')][0]
-                elif self.platform.upper() == "MDM9X05":
-                    newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0] + "\\firehose\\partition.mbn"
+                elif self.platform.upper() == "MDM9X05":  # e.g. BG95M3
+                    # check for update folder first, tmp folder can have many different files or folders
+                    try:
+                        newFW = [i for i in os.listdir(self.tmp_path) if i == "update"][0] + "\\firehose\\partition.mbn"
+                    except Exception as e:
+                        newFW = [i for i in os.listdir(self.tmp_path) if i not in not_fw_file][0] + "\\firehose\\partition.mbn"
                 elif self.platform.upper() == "ASR1803S":
                     newFW = [i for i in os.listdir(self.tmp_path) if i != "platform_config.json"][0] + "\\Falcon_EVB_QSPI_Nor_LWG_Only_Nontrusted_PM802_LPDDR2.blf"
                 elif self.platform.upper() == "FCM360W":
@@ -329,6 +349,9 @@ class QuecPyDownload(object):
             if AVAS and CORE:
                 self.platform = "BG950S"
                 newFW = os.path.join(self.tmp_path)
+                self.tmp_path = current_tmp_path  # restore tmp_path
                 return newFW
             return None
+        
+        self.tmp_path = current_tmp_path  # restore tmp_path
         return newFW
